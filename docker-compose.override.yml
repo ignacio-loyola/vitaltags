@@ -1,0 +1,42 @@
+# Development overrides
+version: "3.9"
+
+services:
+  web:
+    build:
+      target: builder
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./apps/web:/app
+      - /app/node_modules
+      - /app/.next
+    command: ["pnpm", "dev"]
+
+  api:
+    build:
+      target: builder
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./apps/api:/app
+      - /app/.venv
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+  db:
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+
+  redis:
+    ports:
+      - "6379:6379"
+
+  minio:
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: miniosecret
+    ports:
+      - "9000:9000"
+      - "9001:9001"

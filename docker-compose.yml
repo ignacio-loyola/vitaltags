@@ -1,0 +1,182 @@
+version: "3.9"
+
+services:
+  # Web frontend (Next.js)
+  web:
+    build: 
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: vitaltags-web
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_BASE=http://localhost:8000
+      - NEXT_PUBLIC_CDN_BASE=http://localhost:8080
+    depends_on:
+      - api
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # API backend (FastAPI)
+  api:
+    build: 
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: vitaltags-api
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_ENV=production
+      - TZ=Europe/Madrid
+      - SECRET_KEY=${SECRET_KEY}
+      - JWT_EXP_MIN=60
+      - DATABASE_URL=postgresql+psycopg://postgres:postgres@db:5432/vitaltags
+      - REDIS_URL=redis://redis:6379/0
+      - S3_ENDPOINT=http://minio:9000
+      - S3_ACCESS_KEY=${S3_ACCESS_KEY:-minio}
+      - S3_SECRET_KEY=${S3_SECRET_KEY:-miniosecret}
+      - S3_BUCKET=vitaltags
+      - S3_PUBLIC_BASE=http://localhost:9000/vitaltags
+      - BASE_URL=http://localhost:8000
+      - PUBLIC_CDN_BASE=http://localhost:8080
+      - MAGICLINK_FROM=${MAGICLINK_FROM:-noreply@vitaltags.local}
+      - MAGICLINK_BASE_URL=http://localhost:3000
+      - CSP_REPORT_URI=${CSP_REPORT_URI:-}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_started
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    volumes:
+      - ./apps/api/migrations:/app/migrations:ro
+
+  # PostgreSQL database
+  db:
+    image: postgres:16-alpine
+    container_name: vitaltags-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: vitaltags
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=en_US.UTF-8 --lc-ctype=en_US.UTF-8"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d vitaltags"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # Redis for caching and rate limiting
+  redis:
+    image: redis:7-alpine
+    container_name: vitaltags-redis
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+  # MinIO for S3-compatible storage
+  minio:
+    image: minio/minio:latest
+    container_name: vitaltags-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY:-minio}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:-miniosecret}
+      MINIO_BROWSER_REDIRECT_URL: http://localhost:9001
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+      start_period: 30s
+
+  # NGINX reverse proxy with caching
+  nginx:
+    image: nginx:alpine
+    container_name: vitaltags-nginx
+    ports:
+      - "8080:80"
+      - "8443:443"
+    volumes:
+      - ./infra/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./infra/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - nginx_cache:/var/cache/nginx
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      - web
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Database migration runner (one-time)
+  migrate:
+    build: 
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: vitaltags-migrate
+    environment:
+      - DATABASE_URL=postgresql+psycopg://postgres:postgres@db:5432/vitaltags
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["alembic", "upgrade", "head"]
+    restart: "no"
+    profiles:
+      - migrate
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  minio_data:
+    driver: local
+  nginx_cache:
+    driver: local
+  nginx_logs:
+    driver: local
+
+networks:
+  default:
+    name: vitaltags-network
+    driver: bridge

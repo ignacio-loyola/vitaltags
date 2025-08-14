@@ -6,8 +6,8 @@ import time
 import logging
 from .config import settings
 
-# Import routers (will create these next)
-# from .routers import auth, public, me_profile, me_medical, me_tags
+# Import routers
+from .routers import auth, public, me_profile, me_medical, me_tags
 
 app = FastAPI(
     title="Vital Tags API",
@@ -68,11 +68,11 @@ async def global_exception_handler(request: Request, exc: Exception):
 
 
 # Include routers
-# app.include_router(auth.router, prefix="/auth", tags=["auth"])
-# app.include_router(public.router, tags=["public"])
-# app.include_router(me_profile.router, prefix="/me", tags=["profile"])
-# app.include_router(me_medical.router, prefix="/me", tags=["medical"])
-# app.include_router(me_tags.router, prefix="/me", tags=["tags"])
+app.include_router(auth.router, prefix="/auth", tags=["auth"])
+app.include_router(public.router, tags=["public"])
+app.include_router(me_profile.router, prefix="/me", tags=["profile"])
+app.include_router(me_medical.router, prefix="/me", tags=["medical"])
+app.include_router(me_tags.router, prefix="/me", tags=["tags"])
 
 
 @app.get("/")

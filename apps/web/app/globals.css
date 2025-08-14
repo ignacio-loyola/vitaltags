@@ -1,0 +1,111 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Inter font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-feature-settings: 'rlig' 1, 'calt' 1;
+}
+
+/* Emergency-specific styling */
+.emergency-container {
+  @apply min-h-screen bg-gradient-to-br from-red-50 via-white to-orange-50;
+}
+
+.emergency-card {
+  @apply bg-white border border-red-200 shadow-lg rounded-lg p-6;
+}
+
+.emergency-header {
+  @apply border-b border-red-200 pb-4 mb-6;
+}
+
+.medical-section {
+  @apply border-l-4 border-red-500 pl-4 mb-6;
+}
+
+.allergy-critical {
+  @apply bg-red-50 border-red-200 text-red-800;
+}
+
+.allergy-severe {
+  @apply bg-orange-50 border-orange-200 text-orange-800;
+}
+
+.allergy-mild {
+  @apply bg-yellow-50 border-yellow-200 text-yellow-800;
+}
+
+.condition-severe {
+  @apply bg-red-50 border-red-200;
+}
+
+.condition-moderate {
+  @apply bg-orange-50 border-orange-200;
+}
+
+.condition-mild {
+  @apply bg-blue-50 border-blue-200;
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Print styles for emergency info */
+@media print {
+  .emergency-container {
+    @apply bg-white;
+  }
+  
+  .emergency-card {
+    @apply shadow-none border-2 border-black;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Loading states */
+.loading-skeleton {
+  @apply animate-pulse bg-gray-200 rounded;
+}
+
+/* Focus styles for better accessibility */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2;
+}
+
+/* Custom scrollbar */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #ef4444 #f1f5f9;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-gray-100;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-red-400 rounded-full;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  @apply bg-red-500;
+}

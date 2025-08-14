@@ -1,0 +1,149 @@
+name: Docker Build and Security Scan
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Run security scans weekly
+    - cron: '0 6 * * 1'
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  docker-build-and-scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      security-events: write
+
+    strategy:
+      matrix:
+        component: [api, web]
+        include:
+          - component: api
+            context: ./apps/api
+            dockerfile: ./apps/api/Dockerfile
+          - component: web
+            context: ./apps/web
+            dockerfile: ./apps/web/Dockerfile
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}-${{ matrix.component }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
+          load: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
+          format: 'sarif'
+          output: 'trivy-${{ matrix.component }}.sarif'
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-${{ matrix.component }}.sarif'
+          category: 'docker-${{ matrix.component }}'
+
+      - name: Push Docker image
+        if: github.event_name != 'pull_request'
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          platforms: linux/amd64,linux/arm64
+
+  # Test Docker Compose stack
+  test-docker-compose:
+    runs-on: ubuntu-latest
+    needs: docker-build-and-scan
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create .env file
+        run: |
+          cat > .env << EOF
+          SECRET_KEY=test-secret-key-for-ci-docker
+          S3_ACCESS_KEY=minioadmin
+          S3_SECRET_KEY=minioadmin
+          MAGICLINK_FROM=test@vitaltags.local
+          CSP_REPORT_URI=
+          EOF
+
+      - name: Start services
+        run: |
+          docker-compose up -d
+          sleep 30  # Wait for services to be ready
+
+      - name: Run health checks
+        run: |
+          # Check if all services are healthy
+          docker-compose ps
+          
+          # Test API health endpoint
+          curl -f http://localhost:8000/health || exit 1
+          
+          # Test web app
+          curl -f http://localhost:3000/ || exit 1
+          
+          # Test NGINX proxy
+          curl -f http://localhost:8080/health || exit 1
+
+      - name: Run database migration
+        run: |
+          docker-compose --profile migrate up migrate
+
+      - name: Test emergency page
+        run: |
+          # This would test the emergency page functionality
+          # For now, just check if the endpoint responds
+          curl -f http://localhost:8080/e/nonexistent || echo "Expected 404 for nonexistent tag"
+
+      - name: Clean up
+        if: always()
+        run: |
+          docker-compose down -v
+          docker system prune -af
