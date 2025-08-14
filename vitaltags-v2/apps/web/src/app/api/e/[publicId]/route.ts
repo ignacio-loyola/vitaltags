@@ -19,7 +19,7 @@ export async function GET(req: NextRequest, { params }: { params: { publicId: st
 
   // RLS-safe read from public view
   const rows = await prisma.$queryRawUnsafe<any[]>(
-    'SELECT "publicId", "alias", "ageRange", "criticalAllergies", "criticalConditions", "criticalMeds", "icePhone" FROM v_profile_public WHERE "publicId" = $1',
+    'SELECT "publicId", "alias", "ageRange", "criticalAllergies", "criticalConditions", "criticalMeds", "icePhone", "allowBreakGlass" FROM v_profile_public WHERE "publicId" = $1',
     publicId
   )
   if (!rows.length) return NextResponse.json({ error: 'not_found' }, { status: 404 })
@@ -42,6 +42,7 @@ export async function GET(req: NextRequest, { params }: { params: { publicId: st
     criticalConditions: rec.criticalConditions,
     criticalMeds: rec.criticalMeds,
     icePhone: rec.icePhone,
+    allowBreakGlass: rec.allowBreakGlass ?? false,
     nfc,
   })
 }

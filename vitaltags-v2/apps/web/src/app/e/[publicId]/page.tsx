@@ -57,8 +57,20 @@ export default async function EmergencyPage({ params, searchParams }: { params: 
             <div className="cta-row"><a className="btn btn-danger" href={`tel:${encodeURIComponent(data.icePhone)}`}>{t(lang as any, 'callICE')}</a></div>
           </div>
           <div className="card">
-            <div className="muted">Need full clinical details?</div>
-            <div className="cta-row"><Link className="btn btn-primary" href={`/e/${params.publicId}/request`} prefetch={false}>{t(lang as any, 'requestDetails')}</Link></div>
+            {data.allowBreakGlass ? (
+              <>
+                <div className="muted">Emergency Access Available</div>
+                <div style={{ fontSize: 14, marginBottom: 8, color: '#d97706' }}>⚠️ Break-glass access enabled</div>
+                <div className="cta-row">
+                  <Link className="btn btn-primary" href={`/e/${params.publicId}/details`} prefetch={false}>Access Full Details</Link>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="muted">Need full clinical details?</div>
+                <div className="cta-row"><Link className="btn btn-primary" href={`/e/${params.publicId}/request`} prefetch={false}>{t(lang as any, 'requestDetails')}</Link></div>
+              </>
+            )}
           </div>
         </div>
         <div className="footer-note">{t(lang as any, 'notIndexed')}</div>

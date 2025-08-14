@@ -34,20 +34,12 @@ export default async function Home() {
                   </form>
                 </>
               ) : (
-                <>
-                  <Link
-                    href="/login"
-                    className="text-gray-600 hover:text-gray-800 transition-colors"
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    href="/register"
-                    className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors"
-                  >
-                    Sign Up
-                  </Link>
-                </>
+                <Link
+                  href="/login"
+                  className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors"
+                >
+                  Login
+                </Link>
               )}
             </div>
           </div>
@@ -78,16 +70,16 @@ export default async function Home() {
                 ) : (
                   <>
                     <Link
-                      href="/register"
+                      href="/login"
                       className="bg-indigo-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-indigo-700 transition-colors"
                     >
-                      Get Started Free
+                      Login to Get Started
                     </Link>
                     <Link
-                      href="/demo"
+                      href="/e/demo-public-id"
                       className="bg-white text-indigo-600 px-8 py-4 rounded-lg text-lg font-semibold border-2 border-indigo-600 hover:bg-indigo-50 transition-colors"
                     >
-                      View Demo
+                      🚨 View Emergency Demo
                     </Link>
                   </>
                 )}
@@ -155,17 +147,17 @@ export default async function Home() {
         <div className="bg-indigo-600 py-16">
           <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl font-bold text-white mb-4">
-              Ready to Create Your Emergency Profile?
+              Ready to Access Your Emergency Profile?
             </h2>
             <p className="text-xl text-indigo-200 mb-8">
-              Join thousands who trust VitalTags to keep their medical information safe and accessible.
+              Login to manage your critical medical information and keep it accessible when it matters most.
             </p>
             {!user && (
               <Link
-                href="/register"
+                href="/login"
                 className="bg-white text-indigo-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-50 transition-colors"
               >
-                Sign Up Now - It's Free
+                Login Now
               </Link>
             )}
           </div>
@@ -181,7 +173,10 @@ export default async function Home() {
             </div>
             <div className="flex space-x-6">
               <Link href="/demo" className="text-gray-400 hover:text-white transition-colors">
-                Demo
+                Autocomplete Demo
+              </Link>
+              <Link href="/e/demo-public-id" className="text-gray-400 hover:text-white transition-colors">
+                Emergency Demo
               </Link>
               <Link href="/healthz" className="text-gray-400 hover:text-white transition-colors">
                 Status

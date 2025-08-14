@@ -16,8 +16,8 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl)
   }
   
-  // If user has session and tries to access auth pages, redirect to dashboard
-  if (sessionCookie && (pathname === '/login' || pathname === '/register')) {
+  // If user has session and tries to access login page, redirect to dashboard
+  if (sessionCookie && pathname === '/login') {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
   

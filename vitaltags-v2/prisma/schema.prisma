@@ -42,6 +42,9 @@ model Profile {
   revoked        Boolean  @default(false)
   revocationCode String   @unique
   lastAccessAt   DateTime?
+  
+  // Break-glass access control (for when user is unconscious)
+  allowBreakGlass Boolean  @default(true)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 

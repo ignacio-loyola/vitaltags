@@ -15,10 +15,10 @@ export default function Demo() {
             </div>
             <div className="flex items-center space-x-4">
               <Link
-                href="/register"
+                href="/login"
                 className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors"
               >
-                Sign Up
+                Login
               </Link>
             </div>
           </div>
@@ -110,26 +110,29 @@ export default function Demo() {
 
         <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 text-center">
           <h3 className="text-3xl font-bold text-white mb-4">
-            Ready to Create Your Medical Profile?
+            See It In Action
           </h3>
           <p className="text-indigo-100 text-lg mb-8 max-w-2xl mx-auto">
-            Join VitalTags today and ensure your critical medical information is always accessible 
-            to emergency responders when you need it most.
+            Experience a real emergency medical profile. This is what first responders and 
+            medical professionals see when they scan your VitalTags QR code or NFC tag.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/register"
+              href="/e/demo-public-id"
               className="bg-white text-indigo-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-50 transition-colors"
             >
-              Sign Up Free
+              🚨 View Emergency Profile
             </Link>
             <Link
-              href="/"
+              href="/login"
               className="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white/10 transition-colors"
             >
-              Learn More
+              Login to Dashboard
             </Link>
           </div>
+          <p className="text-indigo-200 text-sm mt-4">
+            Emergency URL: <code className="bg-indigo-700 px-2 py-1 rounded">/e/demo-public-id</code>
+          </p>
         </div>
       </div>
 
