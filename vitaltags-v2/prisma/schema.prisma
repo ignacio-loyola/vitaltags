@@ -58,4 +58,30 @@ model AuditLog {
   createdAt DateTime @default(now())
 }
 
+// Lucia session storage
+model Session {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  expiresAt  DateTime
+
+  @@map("Session")
+}
+
+// WebAuthn credentials
+model WebAuthnCredential {
+  id         String   @id               // credential id (base64url)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  publicKey  Bytes
+  counter    Int
+  transports String[] @default([])
+  backedUp   Boolean?
+  deviceType String?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@map("WebAuthnCredential")
+}
+
 

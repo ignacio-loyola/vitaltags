@@ -1,4 +1,139 @@
 html, body { height: 100%; }
-body { margin: 0; font-family: -apple-system, system-ui, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
+body {
+  margin: 0;
+  font-family: ui-sans-serif, -apple-system, system-ui, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  color: #0f172a;
+  background: #f8fafc;
+}
+
+:root {
+  --bg: #f8fafc;
+  --panel: #ffffff;
+  --text: #0f172a;
+  --muted: #475569;
+  --accent: #2563eb;
+  --danger: #dc2626;
+  --warning-bg: #fff7ed;
+  --warning-border: #fed7aa;
+  --success: #16a34a;
+  --ring: rgba(37, 99, 235, 0.35);
+}
+
+* { box-sizing: border-box; }
+
+.container {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.85) 100%);
+  backdrop-filter: saturate(160%) blur(6px);
+  border-bottom: 1px solid #e2e8f0;
+}
+.topbar-inner { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; max-width: 980px; margin: 0 auto; }
+.brand { font-weight: 800; letter-spacing: 0.3px; }
+.brand .dot { color: var(--accent); }
+
+.lang-menu { position: relative; }
+.menu-button { background: #fff; border: 1px solid #e2e8f0; padding: 6px 8px; border-radius: 8px; cursor: pointer; }
+.menu-panel { position: absolute; right: 0; margin-top: 8px; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; box-shadow: 0 12px 28px rgba(2,6,23,0.12); width: 220px; max-height: 50vh; overflow: auto; }
+.menu-item { width: 100%; text-align: left; background: transparent; border: 0; padding: 10px 12px; display: grid; grid-template-columns: 24px 1fr; gap: 10px; cursor: pointer; }
+.menu-item:hover { background: #f8fafc; }
+
+.card {
+  background: var(--panel);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px 18px;
+  box-shadow: 0 10px 20px rgba(2, 6, 23, 0.05);
+}
+
+.page-title {
+  font-size: 28px;
+  margin: 0 0 8px;
+}
+
+.subtitle { margin: 0; color: var(--muted); }
+
+.muted { color: var(--muted); }
+
+.watermark { display: none; }
+
+.emergency-sticky {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 60;
+  background: rgba(220, 38, 38, 0.96);
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-align: center;
+  padding: 10px 16px;
+  box-shadow: 0 -4px 16px rgba(2,6,23,0.12);
+}
+
+.hero { display: grid; gap: 6px; }
+.badges { display: flex; gap: 8px; flex-wrap: wrap; }
+.badge { display: inline-flex; align-items: center; gap: 6px; background: #eff6ff; color: #1e40af; border: 1px solid #dbeafe; padding: 6px 10px; border-radius: 999px; font-weight: 600; }
+
+.banner {
+  background: var(--warning-bg);
+  border: 1px solid var(--warning-border);
+  color: #7c2d12;
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin: 12px 0 16px;
+}
+
+.section { margin: 14px 0; }
+.section h2 { margin: 0 0 8px; font-size: 18px; }
+.list { margin: 0; padding-left: 18px; }
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 720px) { .grid-2 { grid-template-columns: 1fr; } }
+
+.cta-row { display: flex; gap: 10px; align-items: center; margin: 16px 0; }
+.btn {
+  appearance: none;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(2,6,23,0.06), 0 1px 1px rgba(2,6,23,0.04);
+}
+.btn:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-link { background: transparent; color: var(--accent); text-decoration: underline; padding: 0; }
+.btn-primary { background: var(--accent); color: #fff; }
+
+.sticky-cta {
+  position: sticky;
+  bottom: 12px;
+  display: flex; justify-content: flex-end;
+}
+.sticky-cta .btn-primary { box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25); }
+
+.footer-note { margin-top: 16px; font-size: 12px; color: var(--muted); }
+
+/* Clinical page */
+.redacted {
+  background: #f1f5f9;
+  border: 1px dashed #cbd5e1;
+  border-radius: 10px;
+  padding: 10px;
+}
+.reveal-btn { padding: 10px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; }
+.reveal-btn:hover { background: #f8fafc; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .btn-primary { transition: background-color .15s ease; }
+  .btn-primary:hover { background: #1d4ed8; }
+}
 
 

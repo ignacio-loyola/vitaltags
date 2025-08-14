@@ -8,6 +8,8 @@ beforeAll(async () => {
   process.env.PII_SALT_HEX = process.env.PII_SALT_HEX || 'b'.repeat(64)
   process.env.PASETO_LOCAL_KEY = process.env.PASETO_LOCAL_KEY || 'c'.repeat(64)
   process.env.DATABASE_URL = process.env.DATABASE_URL || 'postgresql://localhost:5433/test?schema=public'
+  process.env.RP_ID = process.env.RP_ID || 'localhost'
+  process.env.RP_ORIGIN = process.env.RP_ORIGIN || 'http://localhost:3000'
   // Dynamically import after env is set so env.ts reads them
   const mod = await import('./crypto')
   decryptJSON = mod.decryptJSON

@@ -1,15 +1,17 @@
 /** @type {import('next').NextConfig} */
+const isDev = process.env.NODE_ENV !== 'production'
 const securityHeaders = [
   {
     key: 'Content-Security-Policy',
-    // Baseline CSP. Note: update 'self' origins when adding CDNs; avoid 'unsafe-inline'.
+    // In dev, allow inline/eval and ws for Next.js tooling; in prod keep strict.
     value: [
       "default-src 'self'",
-      "script-src 'self'",
-      "style-src 'self' 'unsafe-inline'", // allow inline styles in Next runtime; consider hashing later
+      `script-src 'self'${isDev ? " 'unsafe-inline' 'unsafe-eval' blob:" : ''}`,
+      "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data:",
       "font-src 'self'",
-      "connect-src 'self'",
+      `connect-src 'self'${isDev ? ' ws:' : ''}`,
+      `worker-src 'self'${isDev ? ' blob:' : ''}`,
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'"
@@ -45,7 +47,6 @@ const securityHeaders = [
   },
   {
     key: 'Strict-Transport-Security',
-    // preload not set by default; set when domain is ready. IncludeSubDomains aligns with best practices.
     value: 'max-age=63072000; includeSubDomains',
   },
 ]

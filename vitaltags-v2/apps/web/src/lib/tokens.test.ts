@@ -7,6 +7,8 @@ beforeAll(async () => {
   process.env.KEK_HEX = process.env.KEK_HEX || 'a'.repeat(64)
   process.env.PII_SALT_HEX = process.env.PII_SALT_HEX || 'b'.repeat(64)
   process.env.DATABASE_URL = process.env.DATABASE_URL || 'postgresql://localhost:5433/test?schema=public'
+  process.env.RP_ID = process.env.RP_ID || 'localhost'
+  process.env.RP_ORIGIN = process.env.RP_ORIGIN || 'http://localhost:3000'
   const mod = await import('./tokens')
   issueBreakGlassToken = mod.issueBreakGlassToken
   verifyBreakGlassToken = mod.verifyBreakGlassToken

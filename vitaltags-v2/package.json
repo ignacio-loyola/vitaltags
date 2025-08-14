@@ -11,6 +11,7 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
+    "seed": "tsx scripts/seed.ts",
     "test": "vitest run",
     "test:ui": "vitest",
     "e2e": "playwright test"
@@ -23,13 +24,18 @@
     "@playwright/test": "^1.46.0",
     "eslint": "^9.9.0",
     "prettier": "^3.3.3",
+    "tsx": "^4.20.4",
     "typescript": "^5.5.4",
     "vitest": "^2.0.5"
   },
   "dependencies": {
+    "@lucia-auth/adapter-prisma": "^4.0.1",
     "@prisma/client": "^6.14.0",
+    "@simplewebauthn/browser": "^13.1.2",
+    "@simplewebauthn/server": "^13.1.2",
     "@t3-oss/env-nextjs": "^0.13.8",
     "libsodium-wrappers": "^0.7.15",
+    "lucia": "^3.2.2",
     "paseto-ts": "^2.0.5",
     "prisma": "^6.14.0",
     "zod": "^4.0.17"
