@@ -13,15 +13,17 @@ async function fetchEmergency(publicId: string) {
   return res.json()
 }
 
-export default async function EmergencyPage({ params }: { params: { publicId: string } }) {
+export default async function EmergencyPage({ params, searchParams }: { params: { publicId: string }; searchParams?: { [key: string]: string | string[] | undefined } }) {
   const data = await fetchEmergency(params.publicId)
   if (!data) return <div style={{ padding: 24 }}>Not found.</div>
   const suspicious = Array.isArray(data.nfc?.flags) && data.nfc.flags.some((f: string) => f !== 'STUB_NO_CRYPTO')
   const accept = headers().get('accept-language') || 'en'
-  const lang = accept.split(',')[0]?.split('-')[0] || 'en'
+  const inferred = accept.split(',')[0]?.split('-')[0] || 'en'
+  const langParam = (searchParams?.lang as string) || (Array.isArray(searchParams?.lang) ? searchParams?.lang[0] : undefined)
+  const lang = langParam || inferred
   return (
     <>
-      <div className="topbar"><div className="topbar-inner"><div className="brand">VitalTags<span className="dot">•</span></div><div className="muted">Emergency Mode</div><LanguageMenu current={lang} /></div></div>
+      <div className="topbar"><div className="topbar-inner"><div className="brand">VitalTags<span className="dot">•</span></div><LanguageMenu current={lang} /></div></div>
       <main className="container" style={{ position: 'relative' }}>
       <div className="watermark" aria-hidden>{t(lang as any, 'emergencyUseOnly')}</div>
       {suspicious && (

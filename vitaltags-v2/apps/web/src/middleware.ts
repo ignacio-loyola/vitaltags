@@ -1,6 +1,26 @@
 import { NextResponse, type NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname
+  
+  // Get the session cookie
+  const sessionCookie = request.cookies.get('vt_sess')
+  
+  // Check if this is a protected route
+  const isProtectedRoute = pathname.startsWith('/dashboard')
+  
+  // If it's a protected route and there's no session, redirect to login
+  if (isProtectedRoute && !sessionCookie) {
+    const loginUrl = new URL('/login', request.url)
+    loginUrl.searchParams.set('redirect', pathname)
+    return NextResponse.redirect(loginUrl)
+  }
+  
+  // If user has session and tries to access auth pages, redirect to dashboard
+  if (sessionCookie && (pathname === '/login' || pathname === '/register')) {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
+  
   const response = NextResponse.next()
 
   // Ensure SameSite=Strict on our cookies by default if we set any via middleware.
@@ -8,7 +28,6 @@ export function middleware(request: NextRequest) {
   response.headers.set('X-Region-Policy', 'EU-only')
 
   // Disallow indexing for sensitive pages
-  const pathname = request.nextUrl.pathname
   if (pathname.startsWith('/e/') || pathname.startsWith('/c/')) {
     response.headers.set('X-Robots-Tag', 'noindex, nofollow')
   }

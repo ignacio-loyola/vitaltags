@@ -15,6 +15,8 @@ model User {
   updatedAt DateTime @updatedAt
 
   profiles  Profile[]
+  sessions  Session[]
+  webauthnCredentials WebAuthnCredential[]
 }
 
 model Profile {
@@ -44,6 +46,11 @@ model Profile {
   updatedAt      DateTime @updatedAt
 
   auditLogs AuditLog[]
+
+  // Terms relations
+  conditions  Condition[]
+  medications Medication[]
+  allergies   Allergy[]
 }
 
 model AuditLog {
@@ -82,6 +89,62 @@ model WebAuthnCredential {
 
   @@index([userId])
   @@map("WebAuthnCredential")
+}
+
+// =========================
+// Terms MVP (Task 01)
+// =========================
+
+model Condition {
+  id        String   @id @default(cuid())
+  profileId String
+  profile   Profile  @relation(fields: [profileId], references: [id])
+  name_en   String
+  slug      String   @unique
+  system    String?
+  code      String?
+  onsetDate DateTime?
+  note      String?
+  createdAt DateTime @default(now())
+
+  @@index([profileId])
+}
+
+model Medication {
+  id        String   @id @default(cuid())
+  profileId String
+  profile   Profile  @relation(fields: [profileId], references: [id])
+  name_en   String
+  slug      String   @unique
+  system    String?
+  code      String?
+  doseText  String?
+  note      String?
+  createdAt DateTime @default(now())
+
+  @@index([profileId])
+}
+
+model Allergy {
+  id          String   @id @default(cuid())
+  profileId   String
+  profile     Profile  @relation(fields: [profileId], references: [id])
+  name_en     String
+  slug        String   @unique
+  system      String?
+  code        String?
+  criticality String?
+  note        String?
+  createdAt   DateTime @default(now())
+
+  @@index([profileId])
+}
+
+model TermI18n {
+  slug      String   @id
+  lang      String
+  label     String
+  updatedAt DateTime @default(now())
 }
 
 

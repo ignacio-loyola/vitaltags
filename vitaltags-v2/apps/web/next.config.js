@@ -9,6 +9,7 @@ const securityHeaders = [
       `script-src 'self'${isDev ? " 'unsafe-inline' 'unsafe-eval' blob:" : ''}`,
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data:",
+      "object-src 'none'",
       "font-src 'self'",
       `connect-src 'self'${isDev ? ' ws:' : ''}`,
       `worker-src 'self'${isDev ? ' blob:' : ''}`,
@@ -47,7 +48,7 @@ const securityHeaders = [
   },
   {
     key: 'Strict-Transport-Security',
-    value: 'max-age=63072000; includeSubDomains',
+    value: 'max-age=63072000; includeSubDomains; preload',
   },
 ]
 
