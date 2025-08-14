@@ -1,0 +1,61 @@
+// datasource and generator
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profiles  Profile[]
+}
+
+model Profile {
+  id                 String   @id @default(cuid())
+  userId             String
+  user               User     @relation(fields: [userId], references: [id])
+
+  // Public emergency record (Tier E)
+  publicId           String   @unique
+  alias              String?
+  ageRange           String
+  criticalAllergies  String[] @default([])
+  criticalConditions String[] @default([])
+  criticalMeds       String[] @default([])
+  icePhone           String
+
+  // Protected clinical record (Tier C)
+  c_ciphertext Bytes?
+  c_nonce      Bytes?
+  dek_wrapped  Bytes?
+
+  // Tag controls
+  revoked        Boolean  @default(false)
+  revocationCode String   @unique
+  lastAccessAt   DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  auditLogs AuditLog[]
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  profileId String
+  profile   Profile  @relation(fields: [profileId], references: [id])
+  event     String
+  reason    String?
+  ipHash    String?
+  uaHash    String?
+  country   String?
+  createdAt DateTime @default(now())
+}
+
+
