@@ -1,0 +1,14 @@
+{
+  "python.defaultInterpreterPath": "./apps/api/.venv/bin/python",
+  "python.formatting.provider": "black",
+  "python.linting.enabled": true,
+  "python.linting.flake8Enabled": true,
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "eslint.workingDirectories": ["apps/web"],
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/node_modules": true,
+    "**/.next": true
+  }
+}
