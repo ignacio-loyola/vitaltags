@@ -1,4 +1,7 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000';
+// Use different API base for server-side vs client-side
+const API_BASE = typeof window === 'undefined' 
+  ? (process.env.API_BASE_INTERNAL || 'http://api:8000')  // Server-side: use container name
+  : (process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000'); // Client-side: use public URL
 
 export interface EmergencyInfo {
   alias?: string;

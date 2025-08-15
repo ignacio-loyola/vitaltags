@@ -3,36 +3,33 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Enable Corepack for pnpm
-RUN corepack enable
-
 # Copy package files
-COPY package.json pnpm-lock.yaml* ./
+COPY package.json package-lock.json* ./
 
 # Install dependencies
-RUN pnpm install --frozen-lockfile
+RUN npm ci
 
 # Copy source code
 COPY . .
 
 # Build the application
-RUN pnpm build
+RUN npm run build
 
 # Runtime stage
 FROM node:18-alpine AS runner
 
 WORKDIR /app
 
-# Enable Corepack for pnpm
-RUN corepack enable
+# Remove corepack configuration
+# RUN corepack enable
 
 # Create non-root user
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # Copy package files and install only production dependencies
-COPY package.json pnpm-lock.yaml* ./
-RUN pnpm install --frozen-lockfile --prod
+COPY package.json package-lock.json* ./
+RUN npm ci --only=production
 
 # Copy built application from builder stage
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
