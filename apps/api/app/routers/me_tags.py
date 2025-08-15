@@ -105,8 +105,8 @@ async def generate_tag_assets(tag_id: int, session: Session):
 async def get_tags(
     user_id: Annotated[int, Depends(get_current_user_id)],
     session: Annotated[Session, Depends(get_session)],
-    status_filter: Optional[str] = Query(None, regex="^(active|revoked|suspended)$"),
-    tag_type: Optional[str] = Query(None, regex="^(qr|nfc|card)$")
+    status_filter: Optional[str] = Query(None, pattern="^(active|revoked|suspended)$"),
+    tag_type: Optional[str] = Query(None, pattern="^(qr|nfc|card)$")
 ):
     """Get all tags for the authenticated user"""
     profile_id = await get_profile_id(user_id, session)

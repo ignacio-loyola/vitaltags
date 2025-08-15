@@ -7,7 +7,7 @@ import logging
 from .config import settings
 
 # Import routers
-from .routers import auth, public, me_profile, me_medical, me_tags
+from .routers import auth, public, me_profile, me_medical, me_tags, terminology
 
 app = FastAPI(
     title="Vital Tags API",
@@ -73,6 +73,7 @@ app.include_router(public.router, tags=["public"])
 app.include_router(me_profile.router, prefix="/me", tags=["profile"])
 app.include_router(me_medical.router, prefix="/me", tags=["medical"])
 app.include_router(me_tags.router, prefix="/me", tags=["tags"])
+app.include_router(terminology.router, prefix="/api", tags=["terminology"])
 
 
 @app.get("/")

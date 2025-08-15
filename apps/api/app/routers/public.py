@@ -121,8 +121,8 @@ async def get_emergency_info(
     short_id: str,
     request: Request,
     session: Annotated[Session, Depends(get_session)],
-    lang: Optional[str] = Query(None, description="Language preference (ISO 639-1)", regex="^[a-z]{2}$"),
-    format: Optional[str] = Query("json", description="Response format", regex="^(json|minimal)$"),
+    lang: Optional[str] = Query(None, description="Language preference (ISO 639-1)", pattern="^[a-z]{2}$"),
+    format: Optional[str] = Query("json", description="Response format", pattern="^(json|minimal)$"),
     no_log: bool = Query(False, description="Skip scan logging (for testing)")
 ):
     """
@@ -282,7 +282,7 @@ async def get_tag_qr(
     short_id: str,
     request: Request,
     session: Annotated[Session, Depends(get_session)],
-    format: str = Query("png", regex="^(png|svg)$")
+    format: str = Query("png", pattern="^(png|svg)$")
 ):
     """Get QR code image for a tag"""
     # Basic rate limiting

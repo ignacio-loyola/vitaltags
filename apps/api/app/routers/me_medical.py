@@ -17,7 +17,7 @@ class ConditionCreate(BaseModel):
     code: Optional[str] = None
     display: str = Field(min_length=1, max_length=500)
     notes: Optional[str] = Field(None, max_length=1000)
-    severity: Optional[str] = Field(None, regex="^(mild|moderate|severe)$")
+    severity: Optional[str] = Field(None, pattern="^(mild|moderate|severe)$")
     is_public: bool = True
 
 
@@ -26,7 +26,7 @@ class ConditionUpdate(BaseModel):
     code: Optional[str] = None
     display: Optional[str] = Field(None, min_length=1, max_length=500)
     notes: Optional[str] = Field(None, max_length=1000)
-    severity: Optional[str] = Field(None, regex="^(mild|moderate|severe)$")
+    severity: Optional[str] = Field(None, pattern="^(mild|moderate|severe)$")
     is_public: Optional[bool] = None
 
 
@@ -49,8 +49,8 @@ class AllergyCreate(BaseModel):
     substance_code: Optional[str] = None
     display: str = Field(min_length=1, max_length=500)
     reaction: Optional[str] = Field(None, max_length=500)
-    severity: Optional[str] = Field(None, regex="^(mild|moderate|severe|fatal)$")
-    onset: Optional[str] = Field(None, regex="^(immediate|delayed)$")
+    severity: Optional[str] = Field(None, pattern="^(mild|moderate|severe|fatal)$")
+    onset: Optional[str] = Field(None, pattern="^(immediate|delayed)$")
     is_public: bool = True
 
 
@@ -59,8 +59,8 @@ class AllergyUpdate(BaseModel):
     substance_code: Optional[str] = None
     display: Optional[str] = Field(None, min_length=1, max_length=500)
     reaction: Optional[str] = Field(None, max_length=500)
-    severity: Optional[str] = Field(None, regex="^(mild|moderate|severe|fatal)$")
-    onset: Optional[str] = Field(None, regex="^(immediate|delayed)$")
+    severity: Optional[str] = Field(None, pattern="^(mild|moderate|severe|fatal)$")
+    onset: Optional[str] = Field(None, pattern="^(immediate|delayed)$")
     is_public: Optional[bool] = None
 
 
@@ -86,7 +86,7 @@ class MedicationCreate(BaseModel):
     dose: Optional[str] = Field(None, max_length=100)
     route: Optional[str] = Field(None, max_length=50)
     frequency: Optional[str] = Field(None, max_length=100)
-    status: str = Field("active", regex="^(active|discontinued|paused)$")
+    status: str = Field("active", pattern="^(active|discontinued|paused)$")
     is_public: bool = True
 
 
@@ -97,7 +97,7 @@ class MedicationUpdate(BaseModel):
     dose: Optional[str] = Field(None, max_length=100)
     route: Optional[str] = Field(None, max_length=50)
     frequency: Optional[str] = Field(None, max_length=100)
-    status: Optional[str] = Field(None, regex="^(active|discontinued|paused)$")
+    status: Optional[str] = Field(None, pattern="^(active|discontinued|paused)$")
     is_public: Optional[bool] = None
 
 
@@ -340,7 +340,7 @@ async def get_medications(
     user_id: Annotated[int, Depends(get_current_user_id)],
     session: Annotated[Session, Depends(get_session)],
     include_private: bool = Query(True, description="Include private medications"),
-    status_filter: Optional[str] = Query(None, regex="^(active|discontinued|paused)$")
+    status_filter: Optional[str] = Query(None, pattern="^(active|discontinued|paused)$")
 ):
     """Get all medications for the authenticated user"""
     profile_id = await get_profile_id(user_id, session)

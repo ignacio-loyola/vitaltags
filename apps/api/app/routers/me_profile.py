@@ -13,8 +13,8 @@ router = APIRouter()
 class ProfileUpdate(BaseModel):
     alias: Optional[str] = Field(None, min_length=1, max_length=100)
     yob: Optional[int] = Field(None, ge=1900, le=2024)
-    blood_type: Optional[str] = Field(None, regex="^(A|B|AB|O)$")
-    rh_factor: Optional[str] = Field(None, regex="^(\+|\-)$")
+    blood_type: Optional[str] = Field(None, pattern="^(A|B|AB|O)$")
+    rh_factor: Optional[str] = Field(None, pattern="^(\+|\-)$")
     donor_status: Optional[bool] = None
     primary_langs: Optional[List[str]] = None
     ice_name: Optional[str] = Field(None, max_length=200)
